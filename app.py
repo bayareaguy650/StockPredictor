@@ -102,6 +102,7 @@ else:
    results["LSTM"] = (y_pred_lstm, mse_lstm, lstm_std)
 
    st.subheader("Model Comparison (MSE & CI)")
+   print(f"DEBUG: model_name={model_name}, mse={mse}, std={std}")
    for model_name, (pred, mse, std) in results.items():
        st.write(f"{model_name}: MSE={mse:.2f}, CI ±{std:.2f}")
 
