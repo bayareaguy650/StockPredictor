@@ -84,7 +84,8 @@ else:
    rf = RandomForestRegressor(n_estimators=rf_trees, random_state=42)
    rf.fit(X_train, y_train)
    y_pred_rf = rf.predict(X_test); mse_rf = mean_squared_error(y_test, y_pred_rf)
-   rf_std = np.std(y_test - y_pred_rf)
+   rf_std = np.std(y_test.values.ravel() - y_pred_rf.ravel())
+  # rf_std = np.std(y_test - y_pred_rf)
    results["Random Forest"] = (y_pred_rf, mse_rf, rf_std)
 
    X_lstm = np.array(X).reshape((len(X),1,X.shape[1])); y_lstm = np.array(y)
