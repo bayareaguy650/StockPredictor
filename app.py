@@ -105,7 +105,7 @@ else:
   
    for model_name, (pred, mse, std) in results.items():
         print(f"DEBUG: model_name={model_name}, mse={mse}, std={std}")
-        st.write(f"{model_name}: MSE={mse:.2f}, CI ±{std.item():.2f}")
+        st.write(f"{model_name}: MSE={float(mse):.2f}, CI ±{float(std):.2f}")
 
    # --- Interactive Predictions Plot ---
    fig_pred = go.Figure()
