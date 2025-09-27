@@ -121,18 +121,32 @@ else:
    future_index = pd.date_range(data.index[-1]+pd.Timedelta(days=1), periods=forecast_days, freq='B')
    forecasts = {}
    for model_name, model_info in zip(["Linear Regression", "Random Forest", "LSTM"], [lr, rf, lstm_model]):
-       future_preds = []; current_features = last_row.values; std = results[model_name][2]
-       for _ in range(forecast_days):
-           if model_name == "LSTM": inp = current_features.reshape((1,1,X.shape[1])); pred = model_info.predict(inp)[0][0]
-           else: pred = model_info.predict(current_features)[0]
-           future_preds.append(pred)
-           ma_short_val = (current_features[0][0]*(ma_short-1)+pred)/ma_short
-           ma_long_val = (current_features[0][1]*(ma_long-1)+pred)/ma_long
-           if 'Sentiment' in feature_cols:
-               sentiment_val = current_features[0][2]
-               current_features = np.array([[ma_short_val, ma_long_val, sentiment_val]])
-           else: current_features = np.array([[ma_short_val, ma_long_val]])
-       forecasts[model_name] = (future_preds, std)
+    future_preds = []
+    current_features = last_row.values.astype(np.float32)  # ensure float32
+    std = results[model_name][2]
+
+    for _ in range(forecast_days):
+        if model_name == "LSTM":
+            inp = current_features.reshape((1, 1, X.shape[1]))
+            pred = model_info.predict(inp)[0][0]
+        else:
+            inp = current_features.reshape(1, -1)  # ✅ ensure 2D
+            pred = model_info.predict(inp)[0]
+
+        future_preds.append(pred)
+
+        # update feature row
+        ma_short_val = (current_features[0][0]*(ma_short-1)+pred)/ma_short
+        ma_long_val = (current_features[0][1]*(ma_long-1)+pred)/ma_long
+
+        if 'Sentiment' in feature_cols:
+            sentiment_val = current_features[0][2]
+            current_features = np.array([[ma_short_val, ma_long_val, sentiment_val]], dtype=np.float32)
+        else:
+            current_features = np.array([[ma_short_val, ma_long_val]], dtype=np.float32)
+
+    forecasts[model_name] = (future_preds, std)
+
 
    # --- Interactive Forecast Plot ---
    fig_forecast = go.Figure()
