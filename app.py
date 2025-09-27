@@ -112,8 +112,8 @@ else:
    fig_pred.add_trace(go.Scatter(x=y_test.index, y=y_test, mode='lines', name='Actual', line=dict(color='black')))
    for i, (model_name, (pred, _, std)) in enumerate(results.items()):
        fig_pred.add_trace(go.Scatter(x=y_test.index, y=pred, mode='lines', name=model_name, line=dict(color=colors[i])))
-       fig_pred.add_trace(go.Scatter(x=y_test.index, y=pred+std, mode='lines', name=f"{model_name} +CI", line=dict(color=colors[i], dash='dash')))
-       fig_pred.add_trace(go.Scatter(x=y_test.index, y=pred-std, mode='lines', name=f"{model_name} -CI", line=dict(color=colors[i], dash='dash')))
+       fig_pred.add_trace(go.Scatter(x=y_test.index, y=np.array(pred) + float(std), mode='lines', name=f"{model_name} +CI", line=dict(color=colors[i], dash='dash')))
+       fig_pred.add_trace(go.Scatter(x=y_test.index, y=np.array(pred) - float(std), mode='lines', name=f"{model_name} -CI", line=dict(color=colors[i], dash='dash')))
    st.plotly_chart(fig_pred, use_container_width=True)
 
    # --- Forecast Future ---
