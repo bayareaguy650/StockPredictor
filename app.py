@@ -202,5 +202,5 @@ st.plotly_chart(fig_forecast, use_container_width=True)
 
 
    # --- Downloadable Forecast CSV ---
-   download_df = pd.DataFrame({model_name: forecasts[model_name][0] for model_name in forecasts}, index=future_index)
-   st.download_button("Download Forecast CSV", download_df.to_csv().encode('utf-8'), file_name=f"{ticker}_forecast.csv")
+download_df = pd.DataFrame({model_name: forecasts[model_name][0] for model_name in forecasts}, index=future_index)
+st.download_button("Download Forecast CSV", download_df.to_csv().encode('utf-8'), file_name=f"{ticker}_forecast.csv")
