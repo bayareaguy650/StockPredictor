@@ -118,8 +118,8 @@ else:
 
    # --- Forecast Future ---
    last_row = X.iloc[-1:].copy()
-   future_index = pd.date_range(data.index[-1]+pd.Timedelta(days=1), periods=forecast_days, freq='B')
-   forecasts = {}
+   last_date = pd.to_datetime(data.index[-1])
+   future_index = pd.bdate_range(start=last_date + pd.Timedelta(days=1), periods=forecast_days)forecasts = {}
    for model_name, model_info in zip(["Linear Regression", "Random Forest", "LSTM"], [lr, rf, lstm_model]):
     future_preds = []
     current_features = last_row.values.astype(np.float32)  # ensure float32
