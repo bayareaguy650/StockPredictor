@@ -149,7 +149,7 @@ else:
     forecasts[model_name] = (future_preds, std)
 
 
-   # --- Interactive Forecast Plot ---
+# --- Interactive Forecast Plot ---
 fig_forecast = go.Figure()
 
 # Add historical close prices
@@ -163,7 +163,7 @@ fig_forecast.add_trace(go.Scatter(
 
 # Add model forecasts and confidence intervals
 for i, (model_name, (preds, std)) in enumerate(forecasts.items()):
-    preds = np.array(preds)
+    preds = np.array(preds, dtype=np.float32)  # ✅ ensure it's a NumPy array
 
     if len(preds) != len(future_index):
         st.warning(f"Skipping forecast plot for {model_name} due to length mismatch.")
@@ -181,7 +181,7 @@ for i, (model_name, (preds, std)) in enumerate(forecasts.items()):
     # Confidence interval lines
     fig_forecast.add_trace(go.Scatter(
         x=future_index,
-        y=preds + std,
+        y=preds + float(std),  # ✅ NumPy array + float = ✅
         mode='lines',
         name=f"{model_name} +CI",
         line=dict(color=colors[i], dash='dash'),
@@ -190,7 +190,7 @@ for i, (model_name, (preds, std)) in enumerate(forecasts.items()):
 
     fig_forecast.add_trace(go.Scatter(
         x=future_index,
-        y=preds - std,
+        y=preds - float(std),
         mode='lines',
         name=f"{model_name} -CI",
         line=dict(color=colors[i], dash='dash'),
