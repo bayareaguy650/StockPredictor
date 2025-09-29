@@ -129,10 +129,10 @@ else:
     for _ in range(forecast_days):
         if model_name == "LSTM":
             inp = current_features.reshape((1, 1, X.shape[1]))
-            pred = model_info.predict(inp)[0][0]
+            pred = float(model_info.predict(inp)[0][0])
         else:
-            inp = current_features.reshape(1, -1)  # ✅ ensure 2D
-            pred = model_info.predict(inp)[0]
+            inp = current_features.reshape(1, -1)
+            pred = float(model_info.predict(inp)[0])
 
         future_preds.append(pred)
 
