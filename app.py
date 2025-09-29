@@ -150,13 +150,56 @@ else:
 
 
    # --- Interactive Forecast Plot ---
-   fig_forecast = go.Figure()
-   fig_forecast.add_trace(go.Scatter(x=data.index, y=data['Close'], mode='lines', name='Historical', line=dict(color='black')))
-   for i, (model_name, (preds, std)) in enumerate(forecasts.items()):
-       fig_forecast.add_trace(go.Scatter(x=future_index, y=preds, mode='lines', name=f"{model_name} Forecast", line=dict(color=colors[i])))
-       fig_forecast.add_trace(go.Scatter(x=future_index, y=np.array(preds)+std, mode='lines', name=f"{model_name}+CI", line=dict(color=colors[i], dash='dash')))
-       fig_forecast.add_trace(go.Scatter(x=future_index, y=np.array(preds)-std, mode='lines', name=f"{model_name}-CI", line=dict(color=colors[i], dash='dash')))
-   st.plotly_chart(fig_forecast, use_container_width=True)
+fig_forecast = go.Figure()
+
+# Add historical close prices
+fig_forecast.add_trace(go.Scatter(
+    x=data.index,
+    y=data['Close'],
+    mode='lines',
+    name='Historical',
+    line=dict(color='black')
+))
+
+# Add model forecasts and confidence intervals
+for i, (model_name, (preds, std)) in enumerate(forecasts.items()):
+    preds = np.array(preds)
+
+    if len(preds) != len(future_index):
+        st.warning(f"Skipping forecast plot for {model_name} due to length mismatch.")
+        continue
+
+    # Main forecast line
+    fig_forecast.add_trace(go.Scatter(
+        x=future_index,
+        y=preds,
+        mode='lines',
+        name=f"{model_name} Forecast",
+        line=dict(color=colors[i])
+    ))
+
+    # Confidence interval lines
+    fig_forecast.add_trace(go.Scatter(
+        x=future_index,
+        y=preds + std,
+        mode='lines',
+        name=f"{model_name} +CI",
+        line=dict(color=colors[i], dash='dash'),
+        showlegend=False
+    ))
+
+    fig_forecast.add_trace(go.Scatter(
+        x=future_index,
+        y=preds - std,
+        mode='lines',
+        name=f"{model_name} -CI",
+        line=dict(color=colors[i], dash='dash'),
+        showlegend=False
+    ))
+
+st.subheader("📈 Forecast for Next Business Days")
+st.plotly_chart(fig_forecast, use_container_width=True)
+
 
    # --- Downloadable Forecast CSV ---
    download_df = pd.DataFrame({model_name: forecasts[model_name][0] for model_name in forecasts}, index=future_index)
